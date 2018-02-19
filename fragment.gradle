@@ -1,0 +1,30 @@
+task springDbJar(type: Jar){
+    appendix = 'spring-db'
+    from sourceSets.main.output
+    include 'com/myapp/foo/spring/db/**'
+}
+
+task springCoreJar(type: Jar){
+    appendix = 'spring-core'
+    from sourceSets.main.output
+    include 'com/myapp/foo/spring/core/**'
+}
+
+task springMessagingJar(type: Jar){
+    appendix = 'spring-message'
+    from sourceSets.main.output
+    include 'com/myapp/foo/spring/messaging/**'
+}
+
+def allSpringJars = tasks.withType(Jar).matching {jar -> jar.archiveName.contains('spring')}
+
+allSpringJars.all() {
+    metaInf {
+        from configurations.spring
+    }
+    doLast {
+        ant.checksum(file: archivePath, todir: archivePath.parentFile)
+    }
+}
+
+task springJars(dependsOn: allSpringJars)
